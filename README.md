@@ -1,10 +1,12 @@
 Event Sourcing with Kotlin
 ==========================
 
-[![Build Status](https://img.shields.io/travis/bringmeister/ddd-with-kotlin/master.svg)](https://travis-ci.org/bringmeister/ddd-with-kotlin)
+[![Build Status](https://img.shields.io/travis/bringmeister/event-sourcing-with-kotlin/master.svg)](https://travis-ci.org/bringmeister/event-sourcing-with-kotlin)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/bringmeister/ddd-with-kotlin/master/LICENSE)
 
-This is a simple demo project to show a Domain Driven Design with Kotlin.
+This is a simple demo project to show Event Sourcing with Kotlin.
+
+Note that this project is derived from [ddd-with-kotlin](https://github.com/bringmeister/ddd-with-kotlin) which shows a similar demo but without event sourcing.
 
 ## Run it
 
@@ -62,3 +64,4 @@ After an update was received, the `Product Service` will:
 - Value objects such as `ProductNumber.kt` or `ProductInformation.kt`.
 - A ports-and-adapters package layout.
 - An anti-corruption layer for external events - they will be transformed to internal commands.
+- A persistence based on event sourcing with a simple in-memory event store.
