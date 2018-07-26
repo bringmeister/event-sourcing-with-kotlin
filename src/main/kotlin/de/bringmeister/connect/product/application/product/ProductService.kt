@@ -2,9 +2,9 @@ package de.bringmeister.connect.product.application.product
 
 import de.bringmeister.connect.product.domain.CommandListener
 import de.bringmeister.connect.product.domain.EventBus
+import de.bringmeister.connect.product.domain.EventStore
 import de.bringmeister.connect.product.domain.product.CreateNewProductCommand
 import de.bringmeister.connect.product.domain.product.Product
-import de.bringmeister.connect.product.domain.product.ProductRepository
 import de.bringmeister.connect.product.domain.product.UpdateMasterDataCommand
 import de.bringmeister.connect.product.domain.product.UpdateMediaDataCommand
 import org.slf4j.Logger
@@ -13,34 +13,38 @@ import org.springframework.stereotype.Service
 
 @Service
 class ProductService(
-    private val productRepository: ProductRepository,
-    private val eventBus: EventBus
+    private val eventBus: EventBus,
+    private val eventStore: EventStore
 ) {
 
     private val log: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @CommandListener
     fun handle(command: CreateNewProductCommand) {
-        val product = Product(command)
-        productRepository.save(product)
-        eventBus.sendAll(product.occurredEvents())
+        val product = Product().applyAll(eventStore.allFor(command.productNumber))
+        product.handle(command)
+        val events = product.occurredEvents()
+        eventBus.sendAll(events)
+        eventStore.saveAll(events)
     }
 
     @CommandListener
     fun handle(command: UpdateMasterDataCommand) {
-        val product = productRepository.find(command.productNumber)
+        val product = Product().applyAll(eventStore.allFor(command.productNumber))
         product.handle(command)
-        productRepository.save(product)
-        eventBus.sendAll(product.occurredEvents())
+        val events = product.occurredEvents()
+        eventBus.sendAll(events)
+        eventStore.saveAll(events)
     }
 
     @CommandListener
     fun handle(command: UpdateMediaDataCommand) {
-        if (productRepository.exists(command.productNumber)) {
-            val product = productRepository.find(command.productNumber)
+        if (eventStore.exists(command.productNumber)) {
+            val product = Product().applyAll(eventStore.allFor(command.productNumber))
             product.handle(command)
-            productRepository.save(product)
-            eventBus.sendAll(product.occurredEvents())
+            val events = product.occurredEvents()
+            eventBus.sendAll(events)
+            eventStore.saveAll(events)
         } else {
             log.info("Media data ignored as product doesn't exist. [productNumber={}]", command.productNumber)
         }

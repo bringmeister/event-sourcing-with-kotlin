@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
  * domain entity is based on its ID rather than on the current data. To
  * reflect this concept in the code, we've overwritten equals() and hashCode().
  */
-abstract class DomainEntity<T : Any>(val id: T) {
+abstract class DomainEntity<T : Any>(var id: T? = null) {
 
     private val log: Logger = LoggerFactory.getLogger(this.javaClass)
     private val occurredEvents: MutableList<Event> = mutableListOf()

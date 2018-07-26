@@ -14,12 +14,11 @@ import de.bringmeister.connect.product.domain.EventListener
 import de.bringmeister.connect.product.domain.product.CreateNewProductCommand
 import de.bringmeister.connect.product.domain.product.MasterDataUpdatedEvent
 import de.bringmeister.connect.product.domain.product.MediaDataUpdatedEvent
-import de.bringmeister.connect.product.domain.product.Product
 import de.bringmeister.connect.product.domain.product.ProductCreatedEvent
 import de.bringmeister.connect.product.domain.product.ProductNumber
 import de.bringmeister.connect.product.domain.product.UpdateMasterDataCommand
 import de.bringmeister.connect.product.domain.product.UpdateMediaDataCommand
-import de.bringmeister.connect.product.infrastructure.stubs.StubbedProductRepository
+import de.bringmeister.connect.product.infrastructure.stubs.StubbedEventStore
 import de.bringmeister.connect.product.ports.rest.MasterDataUpdateAvailableEvent
 import de.bringmeister.connect.product.ports.rest.MediaDataUpdateAvailableEvent
 import org.assertj.core.api.AbstractAssert
@@ -51,7 +50,7 @@ class AcceptanceTest {
     private lateinit var recordingHandler: RecordingHandler
 
     @Autowired
-    private lateinit var productRepository: StubbedProductRepository
+    private lateinit var eventStore: StubbedEventStore
 
     companion object {
         var latch = CountDownLatch(1)
@@ -59,7 +58,7 @@ class AcceptanceTest {
 
     @Before
     fun setUp() {
-        productRepository.clear()
+        eventStore.clear()
         recordingHandler.clear()
     }
 
@@ -71,13 +70,13 @@ class AcceptanceTest {
         val expectedMessages = setOf(
             input,
             CreateNewProductCommand(productNumber, name, description),
-            ProductCreatedEvent(productNumber),
+            ProductCreatedEvent(productNumber, name, description),
             RegisterForMediaDataUpdatesCommand(productNumber),
             UpdateShopCommand(productNumber),
             UpdateSearchIndexCommand(productNumber),
             MediaDataUpdateAvailableEvent(productNumber, url),
             UpdateMediaDataCommand(productNumber, url),
-            MediaDataUpdatedEvent(productNumber),
+            MediaDataUpdatedEvent(productNumber, url),
             UpdateCdnCommand(productNumber)
         )
 
@@ -96,7 +95,7 @@ class AcceptanceTest {
         val expectedMessages = setOf(
             input,
             UpdateMasterDataCommand(productNumber, name, description),
-            MasterDataUpdatedEvent(productNumber),
+            MasterDataUpdatedEvent(productNumber, name, description),
             UpdateShopCommand(productNumber),
             UpdateSearchIndexCommand(productNumber)
         )
@@ -131,7 +130,7 @@ class AcceptanceTest {
         val expectedMessages = setOf(
             input,
             UpdateMediaDataCommand(productNumber, url),
-            MediaDataUpdatedEvent(productNumber),
+            MediaDataUpdatedEvent(productNumber, url),
             UpdateCdnCommand(productNumber)
         )
 
@@ -141,10 +140,8 @@ class AcceptanceTest {
     }
 
     private fun prepareAnExistingProduct() {
-        val command = CreateNewProductCommand(productNumber, name, description)
-        val product = Product(command)
-        product.occurredEvents() // get the events once to clear the list
-        productRepository.save(product)
+        val event = ProductCreatedEvent(productNumber, name, description)
+        eventStore.save(event)
     }
 
     @Service

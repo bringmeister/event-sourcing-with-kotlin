@@ -1,7 +1,10 @@
 package de.bringmeister.connect.product.ports.rest
 
+import de.bringmeister.connect.product.domain.Event
 import de.bringmeister.connect.product.domain.EventBus
+import de.bringmeister.connect.product.domain.EventStore
 import de.bringmeister.connect.product.domain.product.ProductNumber
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -14,7 +17,10 @@ import org.springframework.web.bind.annotation.RestController
  * See the "README.md" for an overview of the business process!
  */
 @RestController
-class DemoController(private val eventBus: EventBus) {
+class DemoController(
+    private val eventBus: EventBus,
+    private val eventStore: EventStore
+) {
 
     @PostMapping("/master_data_update")
     fun masterDataUpdate() {
@@ -45,5 +51,10 @@ class DemoController(private val eventBus: EventBus) {
                 imageUrl = "www.my-domain.com/my-image.jpg"
             )
         )
+    }
+
+    @GetMapping("/event_store")
+    fun showEventStore(): List<Event> {
+        return eventStore.allFor(ProductNumber("P-000001"))
     }
 }
