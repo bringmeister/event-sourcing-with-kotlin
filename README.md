@@ -68,6 +68,18 @@ After an update was received, the `Product Service` will:
 
 ## Resources
 
+### On Event Sourcing
+
+- http://microservices.io/patterns/data/event-sourcing.html
+  * A short description of the pattern including some sample code and additional resources. 
+  This is a good starting point to get a first impression of event sourcing. 
+  The page also shows related patterns as well as pros and cons.
+- http://engineering.pivotal.io/post/event-source-kafka-rabbit-jpa
+  * A demo from Pivotal showing a small example using DDD, event sourcing, commands and a nice CQRS implementation. 
+  You will find the source code on GitHub.
+
+### On DDD
+
 - https://martinfowler.com/tags/domain%20driven%20design.html
   * A collection of articles by Martin Fowler. 
     Each article enlightens a different aspect of DDD.
