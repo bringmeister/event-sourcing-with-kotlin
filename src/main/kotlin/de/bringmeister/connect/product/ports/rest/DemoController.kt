@@ -4,6 +4,8 @@ import de.bringmeister.connect.product.domain.EventBus
 import de.bringmeister.connect.product.domain.EventStore
 import de.bringmeister.connect.product.domain.product.Product
 import de.bringmeister.connect.product.domain.product.ProductNumber
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -24,12 +26,16 @@ class DemoController(
     private val eventStore: EventStore
 ) {
 
+    private val log: Logger = LoggerFactory.getLogger(this.javaClass)
+
     @PostMapping("/products/{productNumber}/masterdata")
-    fun masterDataUpdate(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
+    fun updateMasterDataUpdate(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
 
         // Simulate an incoming event from another external system.
         // In our example, this event would be thrown by the external
         // "Master Data Service".
+
+        log.info("A new master data update was provided! [productNumber=$productNumber]")
 
         eventBus.send(
             MasterDataUpdateAvailableEvent(
@@ -41,11 +47,13 @@ class DemoController(
     }
 
     @PostMapping("/products/{productNumber}/mediadata")
-    fun mediaDataUpdate(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
+    fun updateMediaDataUpdate(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
 
         // Simulate an incoming event from another external system.
         // In our example, this event would be thrown by the external
         // "Media Data Service".
+
+        log.info("A new media data update was provided! [productNumber=$productNumber]")
 
         eventBus.send(
             MediaDataUpdateAvailableEvent(

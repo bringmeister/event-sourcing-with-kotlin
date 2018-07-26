@@ -13,6 +13,10 @@
 <div class="row">
     <div class="col-sm-6">
         <h2>Submit some new master data</h2>
+        <div class="alert alert-primary" role="alert">
+            Simulate the input from an external system by submitting some new master data.
+            This will create a new product or update a product if it already exists.
+        </div>
         <div>
             <p>Product Number: <input type="text" ng-model="product.productNumber"></p>
             <p>Name: <input type="text" ng-model="product.name"></p>
@@ -22,6 +26,10 @@
     </div>
     <div class="col-sm-6">
         <h2>Submit some new media data</h2>
+        <div class="alert alert-primary" role="alert">
+            Simulate the input from an external system by submitting some new media data.
+            This will update an existing product or will be ignored if the product doesn't exist.
+        </div>
         <div>
             <p>Product Number: <input type="text" ng-model="product.productNumber"></p>
             <p>Image URL: <input type="text" ng-model="product.imageUrl"></p>
@@ -31,7 +39,11 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <h2>See all events for a product</h2>
+        <h2>See what we have</h2>
+        <div class="alert alert-primary" role="alert">
+            Let's see the current state of the product. On the left you can see the complete
+            event stream of the product. On the right you can see the current state.
+        </div>
         <div>
             <p>Product Number: <input type="text" ng-model="product.productNumber"></p>
             <button ng-click="loadEvents()">Search</button>
