@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.2/angular.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body ng-app="demoApp" ng-controller="demoController" class="container">
+
+<h1>Demo App</h1>
+
+<div class="row">
+    <div class="col-sm-6">
+        <h2>Submit some new master data</h2>
+        <div>
+            <p>Product Number: <input type="text" ng-model="product.productNumber"></p>
+            <p>Name: <input type="text" ng-model="product.name"></p>
+            <p>Description: <input type="text" ng-model="product.description"></p>
+            <button ng-click="updateMasterdata()">Submit</button>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <h2>Submit some new media data</h2>
+        <div>
+            <p>Product Number: <input type="text" ng-model="product.productNumber"></p>
+            <p>Image URL: <input type="text" ng-model="product.imageUrl"></p>
+            <button ng-click="updateMediaData()">Submit</button>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <h2>See all events for a product</h2>
+        <div>
+            <p>Product Number: <input type="text" ng-model="product.productNumber"></p>
+            <button ng-click="loadEvents()">Search</button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <h3>All events</h3>
+        <pre>{{ events | json }}</pre>
+    </div>
+    <div class="col-sm-6">
+        <h3>Current product</h3>
+        <pre>{{ currentProduct | json }}</pre>
+    </div>
+</div>
+
+<script>
+    var app = angular.module('demoApp', []);
+    app.controller('demoController', function ($scope, $http, $timeout) {
+
+        $scope.product = {
+            productNumber: "P-000001",
+            name: "Coca-Cola",
+            description: "Tasty Coca-Cola!",
+            imageUrl: "www.images.com/coca-cola"
+        };
+
+        $scope.loadEvents = function () {
+            $http
+                .get("/products/" + $scope.product.productNumber + "/events")
+                .then(function (response) {
+                    $scope.events = response.data
+                });
+
+            $http
+                .get("/products/" + $scope.product.productNumber)
+                .then(function (response) {
+                    $scope.currentProduct = response.data
+                });
+        };
+
+        $scope.updateMasterdata = function () {
+            $http
+                .post("/products/" + $scope.product.productNumber + "/masterdata", {
+                    name: $scope.product.name,
+                    description: $scope.product.description
+                })
+                .then(function () {
+                    $timeout(function () {
+                        $scope.loadEvents()
+                    }, 500);
+                });
+        };
+
+        $scope.updateMediaData = function () {
+            $http
+                .post("/products/" + $scope.product.productNumber + "/mediadata", {
+                    imageUrl: $scope.product.imageUrl
+                })
+                .then(function () {
+                    $timeout(function () {
+                        $scope.loadEvents()
+                    }, 500);
+                });
+        };
+    });
+</script>
+
+</body>
+</html>

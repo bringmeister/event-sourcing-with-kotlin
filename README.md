@@ -14,12 +14,13 @@ Note that this project is derived from [ddd-with-kotlin](https://github.com/brin
 ./gradlew bootRun
 ```
 
-Then simulate an incoming event:
+Then open the web UI in a browser: 
 
 ```
-POST to http://localhost:8080/master_data_update
-POST to http://localhost:8080/media_data_update
+http://localhost:8080/index.html
 ```
+
+You can submit requests there and see all events.
 
 ## Example Use Case
 
