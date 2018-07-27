@@ -1,3 +1,7 @@
 package de.bringmeister.connect.product.domain
 
-interface Event
+import de.bringmeister.connect.product.framework.Message
+
+interface Event : Message {
+    fun getDomainEntityId(): String
+}

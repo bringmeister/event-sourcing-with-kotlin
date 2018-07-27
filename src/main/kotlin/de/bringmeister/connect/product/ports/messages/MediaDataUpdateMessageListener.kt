@@ -1,16 +1,15 @@
 package de.bringmeister.connect.product.ports.messages
 
 import de.bringmeister.connect.product.domain.CommandBus
-import de.bringmeister.connect.product.domain.EventListener
 import de.bringmeister.connect.product.domain.product.UpdateMediaDataCommand
-import de.bringmeister.connect.product.ports.rest.MediaDataUpdateAvailableEvent
+import de.bringmeister.connect.product.framework.MessageListener
 import org.springframework.stereotype.Component
 
 @Component
-class MediaDataUpdateAvailableEventListener(private val commandBus: CommandBus) {
+class MediaDataUpdateMessageListener(private val commandBus: CommandBus) {
 
-    @EventListener
-    fun handle(event: MediaDataUpdateAvailableEvent) {
+    @MessageListener
+    fun handle(event: MediaDataUpdateMessage) {
 
         commandBus.send(
             UpdateMediaDataCommand(

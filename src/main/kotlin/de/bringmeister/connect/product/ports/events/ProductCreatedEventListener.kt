@@ -1,17 +1,24 @@
-package de.bringmeister.connect.product.ports.messages
+package de.bringmeister.connect.product.ports.events
 
+import de.bringmeister.connect.product.application.mediadata.RegisterForMediaDataUpdatesCommand
 import de.bringmeister.connect.product.application.search.UpdateSearchIndexCommand
 import de.bringmeister.connect.product.application.shop.UpdateShopCommand
 import de.bringmeister.connect.product.domain.CommandBus
 import de.bringmeister.connect.product.domain.EventListener
-import de.bringmeister.connect.product.domain.product.MasterDataUpdatedEvent
+import de.bringmeister.connect.product.domain.product.ProductCreatedEvent
 import org.springframework.stereotype.Component
 
 @Component
-class MasterDataUpdatedEventListener(private val commandBus: CommandBus) {
+class ProductCreatedEventListener(private val commandBus: CommandBus) {
 
     @EventListener
-    fun handle(event: MasterDataUpdatedEvent) {
+    fun handle(event: ProductCreatedEvent) {
+
+        commandBus.send(
+            RegisterForMediaDataUpdatesCommand(
+                productNumber = event.productNumber
+            )
+        )
 
         commandBus.send(
             UpdateShopCommand(

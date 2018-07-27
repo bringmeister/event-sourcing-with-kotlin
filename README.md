@@ -64,8 +64,22 @@ After an update was received, the `Product Service` will:
 - A process flow with events ("something has happened") and commands ("now do something").
 - Value objects such as `ProductNumber.kt` or `ProductInformation.kt`.
 - A ports-and-adapters package layout.
-- An anti-corruption layer for external events - they will be transformed to internal commands.
+- An anti-corruption layer for external messages - they will be transformed to internal commands.
 - A persistence based on event sourcing with a simple in-memory event store.
+
+## Important Concepts
+
+### Messages, Commands and Events
+
+- External systems (such as the _Master Data Service_ or _Media Data Service_) communicate via messages.
+Those messages will trigger one or more actions in our system.
+Since those messages are not fully under our control (external systems are always evil!), we don't want to hand them to our business layer.
+Instead, we treat those messages as DTOs and translate them to internal commands (_anti-corruption layer_). 
+- Every action taking place in our system is triggered by a command.
+Commands define our internal API.
+- When something has taken place, an event is published.
+Since we are doing event sourcing, events hold all data relevant to their context.
+We persist those events in order to construct our domain objects.
 
 ## Resources
 

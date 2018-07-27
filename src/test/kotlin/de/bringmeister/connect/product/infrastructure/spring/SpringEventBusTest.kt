@@ -48,5 +48,9 @@ class SpringEventBusTest {
         }
     }
 
-    data class MyEvent(val data: String) : Event
+    data class MyEvent(val data: String) : Event {
+        override fun getDomainEntityId(): String {
+            return "ID-42"
+        }
+    }
 }

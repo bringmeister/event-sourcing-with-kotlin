@@ -1,3 +1,5 @@
 package de.bringmeister.connect.product.domain
 
-interface Command
+import de.bringmeister.connect.product.framework.Message
+
+interface Command : Message

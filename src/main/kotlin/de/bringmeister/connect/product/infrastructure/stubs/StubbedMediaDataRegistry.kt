@@ -2,14 +2,14 @@ package de.bringmeister.connect.product.infrastructure.stubs
 
 import de.bringmeister.connect.product.application.mediadata.MediaDataRegistry
 import de.bringmeister.connect.product.application.mediadata.RegisterForMediaDataUpdatesCommand
-import de.bringmeister.connect.product.domain.EventBus
-import de.bringmeister.connect.product.ports.rest.MediaDataUpdateAvailableEvent
+import de.bringmeister.connect.product.framework.MessageBus
+import de.bringmeister.connect.product.ports.messages.MediaDataUpdateMessage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class StubbedMediaDataRegistry(private val eventBus: EventBus) : MediaDataRegistry {
+class StubbedMediaDataRegistry(private val messageBus: MessageBus) : MediaDataRegistry {
 
     private val log: Logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -21,8 +21,8 @@ class StubbedMediaDataRegistry(private val eventBus: EventBus) : MediaDataRegist
         // a product has been registered for updates at the media data service,
         // this service will eventually send an update to us.
 
-        eventBus.send(
-            MediaDataUpdateAvailableEvent(
+        messageBus.send(
+            MediaDataUpdateMessage(
                 productNumber = command.productNumber,
                 imageUrl = "www.my-domain.com/my-new-image.jpg"
             )

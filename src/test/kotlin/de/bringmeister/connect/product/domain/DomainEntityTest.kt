@@ -44,7 +44,11 @@ class DomainEntityTest {
         assertThat(events2).hasSize(0) // ...but not twice!
     }
 
-    private class MyDomainEvent : Event
+    private class MyDomainEvent : Event {
+        override fun getDomainEntityId(): String {
+            return "ID-42"
+        }
+    }
 
     private class MyDomainEntityA(name: String) : DomainEntity<String>(name) {
 

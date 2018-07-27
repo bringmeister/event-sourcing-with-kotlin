@@ -1,4 +1,4 @@
-package de.bringmeister.connect.product.ports.messages
+package de.bringmeister.connect.product.ports.events
 
 import de.bringmeister.connect.product.application.cdn.UpdateCdnCommand
 import de.bringmeister.connect.product.domain.CommandBus
@@ -12,7 +12,10 @@ class MediaDataUpdatedEventListener(private val commandBus: CommandBus) {
     @EventListener
     fun handle(event: MediaDataUpdatedEvent) {
 
-        val updateCdnCommand = UpdateCdnCommand(event.productNumber)
-        commandBus.send(updateCdnCommand)
+        commandBus.send(
+            UpdateCdnCommand(
+                productNumber = event.productNumber
+            )
+        )
     }
 }

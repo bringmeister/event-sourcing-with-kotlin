@@ -6,11 +6,6 @@ import de.bringmeister.connect.product.application.cdn.UpdateCdnCommand
 import de.bringmeister.connect.product.application.mediadata.RegisterForMediaDataUpdatesCommand
 import de.bringmeister.connect.product.application.search.UpdateSearchIndexCommand
 import de.bringmeister.connect.product.application.shop.UpdateShopCommand
-import de.bringmeister.connect.product.domain.Command
-import de.bringmeister.connect.product.domain.CommandListener
-import de.bringmeister.connect.product.domain.Event
-import de.bringmeister.connect.product.domain.EventBus
-import de.bringmeister.connect.product.domain.EventListener
 import de.bringmeister.connect.product.domain.product.CreateNewProductCommand
 import de.bringmeister.connect.product.domain.product.MasterDataUpdatedEvent
 import de.bringmeister.connect.product.domain.product.MediaDataUpdatedEvent
@@ -18,9 +13,12 @@ import de.bringmeister.connect.product.domain.product.ProductCreatedEvent
 import de.bringmeister.connect.product.domain.product.ProductNumber
 import de.bringmeister.connect.product.domain.product.UpdateMasterDataCommand
 import de.bringmeister.connect.product.domain.product.UpdateMediaDataCommand
+import de.bringmeister.connect.product.framework.Message
+import de.bringmeister.connect.product.framework.MessageBus
+import de.bringmeister.connect.product.framework.MessageListener
 import de.bringmeister.connect.product.infrastructure.stubs.StubbedEventStore
-import de.bringmeister.connect.product.ports.rest.MasterDataUpdateAvailableEvent
-import de.bringmeister.connect.product.ports.rest.MediaDataUpdateAvailableEvent
+import de.bringmeister.connect.product.ports.messages.MasterDataUpdateMessage
+import de.bringmeister.connect.product.ports.messages.MediaDataUpdateMessage
 import org.assertj.core.api.AbstractAssert
 import org.junit.Before
 import org.junit.Test
@@ -44,7 +42,7 @@ class AcceptanceTest {
     private val url = "www.my-domain.com/my-new-image.jpg"
 
     @Autowired
-    private lateinit var eventBus: EventBus
+    private lateinit var eventBus: MessageBus
 
     @Autowired
     private lateinit var recordingHandler: RecordingHandler
@@ -65,7 +63,8 @@ class AcceptanceTest {
     @Test
     fun `should create new product when master data is updated for the first time`() {
 
-        val input = MasterDataUpdateAvailableEvent(productNumber, name, description)
+        val input =
+            MasterDataUpdateMessage(productNumber, name, description)
 
         val expectedMessages = setOf(
             input,
@@ -74,7 +73,7 @@ class AcceptanceTest {
             RegisterForMediaDataUpdatesCommand(productNumber),
             UpdateShopCommand(productNumber),
             UpdateSearchIndexCommand(productNumber),
-            MediaDataUpdateAvailableEvent(productNumber, url),
+            MediaDataUpdateMessage(productNumber, url),
             UpdateMediaDataCommand(productNumber, url),
             MediaDataUpdatedEvent(productNumber, url),
             UpdateCdnCommand(productNumber)
@@ -90,7 +89,8 @@ class AcceptanceTest {
 
         prepareAnExistingProduct()
 
-        val input = MasterDataUpdateAvailableEvent(productNumber, name, description)
+        val input =
+            MasterDataUpdateMessage(productNumber, name, description)
 
         val expectedMessages = setOf(
             input,
@@ -108,7 +108,7 @@ class AcceptanceTest {
     @Test
     fun `should ignore media data updates for unknown products`() {
 
-        val input = MediaDataUpdateAvailableEvent(productNumber, url)
+        val input = MediaDataUpdateMessage(productNumber, url)
 
         val expectedMessages = setOf(
             input,
@@ -125,7 +125,7 @@ class AcceptanceTest {
 
         prepareAnExistingProduct()
 
-        val input = MediaDataUpdateAvailableEvent(productNumber, url)
+        val input = MediaDataUpdateMessage(productNumber, url)
 
         val expectedMessages = setOf(
             input,
@@ -149,15 +149,9 @@ class AcceptanceTest {
 
         val messages = mutableSetOf<Any>()
 
-        @EventListener
-        fun handle(event: Event) {
-            messages.add(event)
-            latch.countDown()
-        }
-
-        @CommandListener
-        fun handle(command: Command) {
-            messages.add(command)
+        @MessageListener
+        fun handle(message: Message) {
+            messages.add(message)
             latch.countDown()
         }
 

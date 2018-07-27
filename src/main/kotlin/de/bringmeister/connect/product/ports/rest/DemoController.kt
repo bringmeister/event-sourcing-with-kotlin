@@ -1,9 +1,11 @@
 package de.bringmeister.connect.product.ports.rest
 
-import de.bringmeister.connect.product.domain.EventBus
 import de.bringmeister.connect.product.domain.EventStore
 import de.bringmeister.connect.product.domain.product.Product
 import de.bringmeister.connect.product.domain.product.ProductNumber
+import de.bringmeister.connect.product.framework.MessageBus
+import de.bringmeister.connect.product.ports.messages.MasterDataUpdateMessage
+import de.bringmeister.connect.product.ports.messages.MediaDataUpdateMessage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,30 +17,30 @@ import org.springframework.web.bind.annotation.RestController
 /**
  * A REST controller to simulate the two starting points of the demo application:
  *
- *  - The "MasterDataUpdateAvailableEvent" is thrown by the "Master Data Service".
- *  - The "MediaDataUpdateAvailableEvent" is thrown by the "Media Data Service".
+ *  - The "MasterDataUpdateMessage" is send by the "Master Data Service".
+ *  - The "MediaDataUpdateMessage" is send by the "Media Data Service".
  *
  * See the "README.md" for an overview of the business process!
  */
 @RestController
 class DemoController(
-    private val eventBus: EventBus,
+    private val messageBus: MessageBus,
     private val eventStore: EventStore
 ) {
 
     private val log: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @PostMapping("/products/{productNumber}/masterdata")
-    fun updateMasterDataUpdate(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
+    fun updateMasterData(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
 
-        // Simulate an incoming event from another external system.
-        // In our example, this event would be thrown by the external
+        // Simulate an incoming message from another external system.
+        // In our example, this message would be send by the external
         // "Master Data Service".
 
         log.info("A new master data update was provided! [productNumber=$productNumber]")
 
-        eventBus.send(
-            MasterDataUpdateAvailableEvent(
+        messageBus.send(
+            MasterDataUpdateMessage(
                 productNumber = productNumber,
                 name = payload["name"]!!,
                 description = payload["description"]!!
@@ -47,16 +49,16 @@ class DemoController(
     }
 
     @PostMapping("/products/{productNumber}/mediadata")
-    fun updateMediaDataUpdate(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
+    fun updateMediaData(@PathVariable productNumber: ProductNumber, @RequestBody payload: Map<String, String>) {
 
-        // Simulate an incoming event from another external system.
-        // In our example, this event would be thrown by the external
+        // Simulate an incoming message from another external system.
+        // In our example, this message would be send by the external
         // "Media Data Service".
 
         log.info("A new media data update was provided! [productNumber=$productNumber]")
 
-        eventBus.send(
-            MediaDataUpdateAvailableEvent(
+        messageBus.send(
+            MediaDataUpdateMessage(
                 productNumber = productNumber,
                 imageUrl = payload["imageUrl"]!!
             )

@@ -5,4 +5,8 @@ import de.bringmeister.connect.product.domain.Event
 data class MediaDataUpdatedEvent(
     val productNumber: ProductNumber,
     val imageUrl: String
-) : Event
+) : Event {
+    override fun getDomainEntityId(): String {
+        return productNumber.stringValue()
+    }
+}

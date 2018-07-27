@@ -6,4 +6,8 @@ data class MasterDataUpdatedEvent(
     val productNumber: ProductNumber,
     val name: String,
     val description: String
-) : Event
+) : Event {
+    override fun getDomainEntityId(): String {
+        return productNumber.stringValue()
+    }
+}
