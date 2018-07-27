@@ -81,6 +81,17 @@ Commands define our internal API.
 Since we are doing event sourcing, events hold all data relevant to their context.
 We persist those events in order to construct our domain objects.
 
+### Application Layer vs Domain Layer
+
+- The application layer contains services. 
+Those services glue together different components. 
+However, they don't execute any business logic on their own. 
+Instead they delegate this to the domain layer.
+A good example is the `ProductService.kt`.
+- The domain layer is the place where business logic is implemented.
+Domain entities (such as `Product.kt`) encapsulate data and business methods to (operate on that data).
+The domain layer should be independent of frameworks (as far as possible).
+
 ## Resources
 
 ### On Event Sourcing
